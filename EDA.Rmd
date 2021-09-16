@@ -10,12 +10,21 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Research question
+**Which attributes best predict breast cancer malignancy?**
 
 ```{r}
+# Read data and set column 
 data <- read.csv("breast-cancer-wisconsin.data", na.strings = '?')
 colnames(data) <- c("id", "Clump Thickness", "Cell Size Uniformity", "Cell Shape Uniformity",                        "Marginal Adhesion", "Single Epithelial Cell Size", "Bare Nuclei",
                     "Bland Chromatin", "Normal Nucleoli", "Mitoses", "Class")
-head(data)
+```
+
+
+```{r}
+# Look at head of data
+head(data, 10)
+
+# Summarize data
 summary(data)
 
 ```
