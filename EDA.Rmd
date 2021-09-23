@@ -9,23 +9,99 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Research question
+NOTE: This EDA is still a work in progress, text explaining the what and why of the code will be added later
+
+
+# Research questions
 **Which attributes best predict breast cancer malignancy?**
 
+**Is it possible to create a machine learning model that can predict breast cancer malignancy with an accuracy of 80% or higher?**
+
 ```{r}
-# Read data and set column 
-data <- read.csv("breast-cancer-wisconsin.data", na.strings = '?')
-colnames(data) <- c("id", "Clump Thickness", "Cell Size Uniformity", "Cell Shape Uniformity",                        "Marginal Adhesion", "Single Epithelial Cell Size", "Bare Nuclei",
-                    "Bland Chromatin", "Normal Nucleoli", "Mitoses", "Class")
+library(tibble)
 ```
 
 
 ```{r}
+# Read data and set column 
+data <- read.csv("breast-cancer-wisconsin.data", na.strings = '?')
+data <- as.tibble(data)
+colnames(data) <- c("id", "Clump_Thickness", "Cell_Size_Uniformity", "Cell_Shape_Uniformity",                        "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei",
+                    "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class")
+
+```
+
+## Basic look at the data
+```{r}
 # Look at head of data
-head(data, 10)
+data
 
 # Summarize data
 summary(data)
+```
 
+
+## Correlation
+```{r}
+# Get correlation
+data.cor <- cor(data, use = "complete.obs")
+data.cor <- as.data.frame(data.cor)
+# Keep all correlations that are higher than 0.8
+cor.names <- names(data.cor)[which(data.cor$Class > 0.8)]
+# Print
+cat(cor.names)
+```
+## Change class values to B for benign and M for Malignant istead of 2 and 4
+
+```{r}
+data$Class[data$Class == 2] <- 'B'
+data$Class[data$Class == 4] <- 'M'
+data
+```
+
+## Make plots
+### Correlation Cell Size, Cell Shape
+```{r}
+# Make plot
+library(ggplot2)
+# coef(linear.model <- lm(Cell_Shape_Uniformity ~ Cell_Size_Uniformity, data = data))
+
+ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Uniformity,
+                                  )) +
+  geom_point(aes(col = Class), alpha = 0.5) +
+  geom_smooth(method = "lm", se = T) +
+  #geom_abline(intercept = 0.44, slope = 0.88) +
+  xlab("Cell Size Uniformity (grade 1-10)") +
+  ylab("Cell Shape Uniformity (grade 1-10)")
+  theme_minimal()
+```
+### How does cell shape relate to malignance
+
+```{r}
+ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
+  geom_jitter(width = 0.05, height = 0.2, col = "forestgreen", alpha = 0.5) +
+  theme_minimal()
+```
+*figure 1 ~ bla die bla*
+
+### Class distribution
+```{r}
+m.count <- length(data$Class[data$Class == 'M'])
+b.count <- length(data$Class[data$Class == 'B'])
+
+count.data <- data.frame(Class = c('Malignant', 'Benign'), Value = c(m.count, b.count))
+ggplot(count.data, aes(x = "", y = Value, fill = Class)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void()
+```
+
+
+
+
+### raw data, not well documented
+```{r}
+wdbc <- read.csv("wdbc.data", header=F)
+head(wdbc)
 ```
 
