@@ -341,11 +341,12 @@ names(roc_data) <- c("Instance_number",
  
 
 head(roc_data)
+```
 
- 
 
+```{r}
 library(ggpubr)
-colors <- c(classifier = "red", threshold = "blue")
+colors <- c(classifier = "steelblue1", threshold = "salmon2")
 plt <- ggplot(data = roc_data,
        mapping = aes(x = False_Positive_Rate, y = True_Positive_Rate)) +
     geom_point(mapping = aes(color = "classifier")) +
