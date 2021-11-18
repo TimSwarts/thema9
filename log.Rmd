@@ -362,4 +362,20 @@ plt <- ggplot(data = roc_data,
     theme_minimal()
 print(plt)
 ```
+We are satisfied with this model, and will now create a data set suited for testing classification, by removing all unnecessary columns and writing to an arff and csv file.
+
+```{r}
+library(farff)
+# make copy of  current data set
+classify.data <- to.csv
+# remove unwanted columns
+classify.data[, c(1, 2, 5, 9, 10)] <- NULL
+# make class na (because it needs to be classified by the model)
+classify.data$Class <- NA
+classify.data
+# write to arff file
+writeARFF(classify.data, path = "./breastcancer_model_input.arff", overwrite = TRUE)
+
+```
+
 
