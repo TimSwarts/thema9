@@ -26,7 +26,7 @@ library(scales)
 
 This breast cancer database was obtained from the University of Wisconsin Hospitals, Madison from Dr. William H. Wolberg.
 
-The data provided does not heave clear column names, but a description of each attribute has been given in the *breast-cancer-wisconsin.names* file. This allows us to assign representative names to every column. The code to do this is shown below.
+The data provided does have clear column names, but a description of each attribute has been given in the *breast-cancer-wisconsin.names* file. This allows us to assign representative names to every column. The code to do this is shown below.
 
 ```{r}
 # Read data
@@ -80,7 +80,7 @@ ggplot(data = melted.cormat, aes(x=Var1, y=Var2, fill=value)) +
   xlab('') + # the x and y axes have no useful names, and are thus left blank
   labs(caption =
       "Figure 1 ~ Correlation Heatmap of breast cancer data set.
-      The lighter the color the better, the correlation between the two columns.") + # adds caption
+      The lighter the color, the better the correlation between the two columns.") + # adds caption
   theme_minimal() + # set theme to minimal
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # adjust x labels to be diagonal
         plot.caption = element_text(hjust = 0.7)) # adjust caption position
@@ -181,7 +181,7 @@ ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
   labs(caption="Figure 4 ~ Cell Shape as a function of Class. Jitter and transparancy is added to show the denisity of points at each grade.") +
   theme_minimal()
 ```
-Looking at figure 4, we can conclude that most of benign cases will get a cell shape grade of 2 or lower. The malignant cases, however, appear more spread out. This would cause inaccuracy when classifying with this attribute only.
+Looking at figure 4, we can conclude that most of benign cases will get a cell shape grade of 2 or lower. The malignant cases, however, appear more spread out. This would cause inaccuracy when classifying with this attribute only.      
 <!--
 ### raw data, not well documented
 ```{r}
@@ -189,6 +189,7 @@ wdbc <- read.csv("wdbc.data", header=F)
 head(wdbc)
 ```
 -->
+
 # Set data to csv
 ```{r, name="make data set"}
 to.csv <- na.omit(data)
@@ -315,7 +316,25 @@ Table: Confusion Matrix Logistic with more attributes
 <!--Logistic Cost Sensitive Classifier-->
 ## Cost Sensitive Classifiers
 ### Logistic Cost Sensitve Classifier
-dingen
+This model was trained using only the following attributes as predictors:    
+
+- Cell_Size_Uniformity   
+- Cell_Shape_Uniformity   
+- Bare_Nuclei   
+- Bland_Chromatin   
+
+Accuracy: 96.77% correctly classified instances  
+Recall for M: 0.975  
+Precision for M: 0.936 
+
+
+| classified as -> | B   | M   |
+| ---------------- | --- | --- |
+| B                | 427 | 16  |
+| M                |  6  | 223 |
+
+Table: Confusion Matrix Logistic Cost Sensitive Classifier
+
 
 
 ## ROC
@@ -372,9 +391,9 @@ classify.data <- to.csv
 classify.data[, c(1, 2, 5, 9, 10)] <- NULL
 # make class na (because it needs to be classified by the model)
 classify.data$Class <- NA
-classify.data
 # write to arff file
-writeARFF(classify.data, path = "./breastcancer_model_input.arff", overwrite = TRUE)
+type=NULL
+writeARFF(classify.data, path = "./breastcancer_model_input.arff", overwrite=TRUE)
 
 ```
 
