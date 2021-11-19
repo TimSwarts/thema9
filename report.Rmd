@@ -12,23 +12,23 @@ knitr::opts_chunk$set(echo = FALSE)
 \newpage
 
 # Abstract
-
+Breast cancer is the second leading cause of cancer death in women. Time is key in finding the right diagnosis; A fast diagnosis of breast cancer can drastically improve the five year survival rate, but a rather time consuming part of this is gathering the data needed to diagnose the disease. We used data from the University of Wisconsin Hospitals in Madison to train a machine learning algorithm to predict breast cancer malignancy. In the end the created model could predict whether a case of breast cancer was malignant or benign with a 96.77% accuracy, using only four predicting attributes.
 \newpage
 \tableofcontents
 \newpage
 
 # Introduction
-Breast cancer is the second leading cause of cancer death in women. It is therefore crucial to determine wheter any given found lump in the breasts is a malignant form of breast cancer, or rather benign. Time is key in finding the right diagnosis, afast diagnosis of breast cancer can drastically improve the five year survival rate, but a rather time consuming part of this is gathering data. Because of this, a machine learning algorithm that can accurately predict breast cancer malignancy with just a few data points could prove vital. Studies show that in stage 1 and stage 2 breast cancer the 5 year survival rate is 89.6-97.9%. But in stage 4 the 5 year survival rate drops to 26.2%. This proves that an early diagnosis is life-crucial. This researchs hopes to help with creating a machine learning solution to diagnosing breast cancer malignancy.
+Breast cancer is the second leading cause of cancer death in women. It is therefore crucial to determine whether any given found lump in the breasts is a malignant form of breast cancer, or rather benign. Time is key in finding the right diagnosis; A fast diagnosis of breast cancer can drastically improve the five year survival rate, but a rather time consuming part of this is gathering data. Because of this, a machine learning algorithm that can accurately predict breast cancer malignancy with just a few data points could prove vital. Studies show that in stage 1 and stage 2 breast cancer the 5 year survival rate is 89.6-97.9%. But in stage 4 the 5 year survival rate drops to 26.2%. This proves that an early diagnosis is life-crucial. This research hopes to help with creating a machine learning solution to diagnosing breast cancer malignancy. \cite{Cancer1} \cite{Cancer2}
 
 ## Objective
 The goal of this research can be encompassed in two main research questions:
 Which attributes best predict breast cancer malignancy?
 Is it possible to create a machine learning model that can predict breast cancer malignancy
 with an accuracy of 80% or higher?
-In answering these questions it is import to note that in this case, we would want a very sensitive model, that can pick up as many malginant cases as possible. This model would thus have very little false negatives for malignancy, which might introduce a few extra false possitives. This is a fair trade given that the consequences of leaving a malignant lump untreated are far greater than the consequences of treating someone with a benign form.
+In answering these questions it is import to note that in this case, we would want a very sensitive model, that can pick up as many malignant cases as possible. This model would thus have very little false negatives for malignancy, which might introduce a few extra false positives. This is a fair trade given that the consequences of leaving a malignant lump untreated are far greater than the consequences of treating someone with a benign form.
 
 ## Theory
-Breast cancer is a type of cancer that starts when cells in the breast begin to grow out of control. These cells usually start a tumor which can be seen on an x-ray or felt as a lump. These lumps are mostly benign, but malignant cases exists which need medical attention.
+Breast cancer is a type of cancer that starts when cells in the breast begin to grow out of control. These cells usually start a tumor which can be seen on an x-ray or felt as a lump. These lumps are mostly benign, but malignant cases exists which need medical attention. \cite{Cancer2}
 
 \newpage
 # Materials & Methods
@@ -59,7 +59,7 @@ The exploratory data analysis and the log, can be found in the github repository
 [thema9](https://github.com/TimSwarts/thema9) (link)   
 
 ## Methods
-The data was read into R. Models were tested with 10 fold cross validation.
+The data was read into R, and turned into a tibble, which allowed for better readability. The provided column names did not clearly explain what any given column was about. With the help of the user manual and the provided .names file these were changed to more comprehensible names. A correlation matrix was made using the cor function after which ggplot2 was used to create a correlation heat map. The class values, which used to be integers, either 2 or 4, were changed to nominal labels 'B' and 'M' respectively. After this the amount of instances per class were calculate and the corresponding percentage showing the distribution of the two classes. This was visualized into a pie chart using ggplot2. Further visualization was carried out by ggplot as well. After this, NA's were omitted and the data was written to a csv file that was then used in Weka as training and testing data. Models were tested with 10 fold cross validation. The performance of the different algorithms tried were logged. The best model was exported to a .model file and used for the Java application.
 
 \newpage
 # Results
@@ -88,9 +88,9 @@ cormat <- cor(na.omit(data[, -1]))
 melted.cormat <- melt(cormat)
 # head(melted.cormat) # <- uncomment this to look at the new matrix
 
-# Make heatmap with ggplot
+# Make heat map with ggplot
 ggplot(data = melted.cormat, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + # geom_tile makes the heatmap tiles
+  geom_tile() + # geom_tile makes the heat map tiles
   scale_fill_gradient(low = rgb(0, 0, 0),
                       high = rgb(0, 1, 1),
                       guide = "colorbar") + # sets color the gradient for tiles
@@ -175,7 +175,7 @@ ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
 Figure 4 shows a lot of benign cases at Cell Shape Uniformity grades 1 and 2 and none higher than 8. Malignant cases are spread out, but only 2 points are at grade 1.
 
 ## Testing Machine Learning Algorithms
-Over the span of this reasearch multiple, for the sake of time efficiency, only one is shown here, along with its ROC curve. The model in case is a CostSenstiveClassifier that uses Logistic Regression. This model was trained using only the following attributes as predictors:    
+Over the span of this research multiple, for the sake of time efficiency, only one is shown here, along with its ROC curve. The model in case is a CostSenstiveClassifier that uses Logistic Regression. This model was trained using only the following attributes as predictors:    
 
 - Cell_Size_Uniformity   
 - Cell_Shape_Uniformity   
@@ -196,17 +196,24 @@ Precision for M: 0.936
 Table: Confusion Matrix Logistic Cost Sensitive Classifier
 
 As can be seen in the table above, this model only produces 6 false negatives for malignant breast cancer. This is visible in the cell in the column classified as B (Benign) and the row M (actually malignant).
+
 \newpage
-# Discussion & Conclusion
-The goal of this project was to train a machine learning algorithm to classify breast cancer cases as either benign or malignant as accuratly as possible and to minimize the amount of data needed for said prediction by searching which attributes in the given data set were suited best for the task. This algorithm had to be very sensitive and yiield very little flase negative. Completing this goal was achieved by looking at the correlation between the different predictors and the class attribute (figure 1), and by testing various available algorithms with varying cost matrices. The eventual model had an accuracy of 96.77%, as shown in the results, and yielded only 6 false negatives. This model was then implemented in an executable java application.
+
+# Discussion & Conclusion  
+The goal of this project was to train a machine learning algorithm to classify breast cancer cases as either benign or malignant as accurately as possible and to minimize the amount of data needed for said prediction by searching which attributes in the given data set were suited best for the task. This algorithm had to be very sensitive and yield very little false negative. Completing this goal was achieved by looking at the correlation between the different predictors and the class attribute (figure 1), and by testing various available algorithms with varying cost matrices. The eventual model had an accuracy of 96.77%, as shown in the results, and yielded only 6 false negatives. This model was then implemented in an executable java application.
 
 ## Discussion
-Looking back at figure 4, something noteworthy is the very clear devide between the two groups (benign and malignant) when spread over Cell Size- and Cell Shape Uniformity. If given the time, we would have liked to explore how accurate one could classify the data with these attributes only, because the plot gives the impression that a single perceptron could fairly adequatly split the data in two. Something to keep in mind however, is that the spread of points in figure 4 noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. This makes sense keeping in mind malignant cancers are cells rapidly and uncontrollably deviding, and would thus create alot of diversity in cell uniformity, but this unpredictableness can cause inaccuracy when classifying new data sets using Cell Shape Uniformity and Cell Size Uniformity only.
+Looking back at figure 4, something noteworthy is the very clear divide between the two groups (benign and malignant) when spread over Cell Size- and Cell Shape Uniformity. If given the time, we would have liked to explore how accurate one could classify the data with these attributes only, because the plot gives the impression that a single perceptron could fairly adequately split the data in two. Something to keep in mind however, is that the spread of points in figure 4 noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. This makes sense keeping in mind malignant cancers are cells rapidly and uncontrollably dividing, and would thus create a lot of diversity in cell uniformity, but this unpredictableness can cause inaccuracy when classifying new data sets using Cell Shape Uniformity and Cell Size Uniformity only.
 
 ## Conclusion
-At the end the most effictive predictors, as can be concluded out of figure 1, were Cell_Size_Uniformity, Cell_Shape_Uniformity, Bare_Nuclei, and Bland_Chromatin. It is possible to classify any given breast lump as either benign or malignant with these attributes alone, with a 96.77% accuracy. This classifcation process has a recall of 0.975. This classifier is however not initended to be used as a sole diagnosing factor, but merely as screening tool that aids doctors in making their diagnosis.
+At the end the most effective predictors, as can be concluded out of figure 1, were Cell_Size_Uniformity, Cell_Shape_Uniformity, Bare_Nuclei, and Bland_Chromatin. It is possible to classify any given breast lump as either benign or malignant with these attributes alone, with a 96.77% accuracy. This classification process has a recall of 0.975. This classifier is however not intended to be used as a sole diagnosing factor, but merely as screening tool that aids doctors in making their diagnosis.
 
 \newpage
 \begin{thebibliography}{9}
-
+\bibitem{Cancer1}
+\textit{Cancer Research UK}. (2021). \textit{Breast Cancer Survival Statistics}. Consulted on November 19th, 2021, from
+\\\texttt{https://www.cancerresearchuk.org/health-professional/cancer-statistics/statistics-by-cancer-type/breast-cancer/survival}
+\bibitem{Cancer2}
+\textit{Cancer}. (2021). \textit{About Breast Cancer}. Consulted on November 19th, 2021, from
+\\\texttt{https://www.cancer.org/cancer/breast-cancer/about/}
 \end{thebibliography}
