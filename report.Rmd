@@ -25,7 +25,7 @@ The goal of this research can be encompassed in two main research questions:
 Which attributes best predict breast cancer malignancy?
 Is it possible to create a machine learning model that can predict breast cancer malignancy
 with an accuracy of 80% or higher?
-In answering these questions it is import to note that in this case, we would want a very sensitive model, that can pick up as many malignant cases as possible. This model would thus have very little false negatives for malignancy, which might introduce a few extra false positives. This is a fair trade given that the consequences of leaving a malignant lump untreated are far greater than the consequences of treating someone with a benign form.
+In answering these questions it is important to note that in this case, we would want a very sensitive model, that can pick up as many malignant cases as possible. This model would thus have very little false negatives for malignancy, which might introduce a few extra false positives. This is a fair trade given that the consequences of leaving a malignant lump untreated are far greater than the consequences of treating someone with a benign form.
 
 ## Theory
 Breast cancer is a type of cancer that starts when cells in the breast begin to grow out of control. These cells usually start a tumor which can be seen on an x-ray or felt as a lump. These lumps are mostly benign, but malignant cases exists which need medical attention. \cite{Cancer2}
@@ -43,7 +43,7 @@ The breast cancer database used in this research was obtained from the Universit
 * ggrepel 0.9.1  
 * dplyr 1.0.7   
 
-Training and testing machine learning algorithms was done by using the Explorer application in Weka Version 3.8.4 from The University of Waikato. Lastly, a java program to run the final model to classify new data was coded in Java version 1.14.
+Training and testing machine learning algorithms was done by using the Explorer application in Weka Version 3.8.4 from The University of Waikato. Lastly, a Java program to run the final model to classify new data was coded in Java version 1.14.
 
 Any cost sensitive classifiers in this report were made with the following cost matrix, unless stated otherwise:
 
@@ -53,18 +53,17 @@ Any cost sensitive classifiers in this report were made with the following cost 
 | M                | 4   | 0   |
 Table: Cost Matrix
 
-The code for the Java application is available at the following github repository:  
-[2021thema9java](https://github.com/TimSwarts/2021thema9java) (link)  
+The code for the Java application is available at the following github repository:  https://github.com/TimSwarts/2021thema9Java
 The exploratory data analysis and the log, can be found in the github repository below:  
-[thema9](https://github.com/TimSwarts/thema9) (link)   
+https://github.com/TimSwarts/thema9
 
 ## Methods
-The data was read into R, and turned into a tibble, which allowed for better readability. The provided column names did not clearly explain what any given column was about. With the help of the user manual and the provided .names file these were changed to more comprehensible names. A correlation matrix was made using the cor function after which ggplot2 was used to create a correlation heat map. The class values, which used to be integers, either 2 or 4, were changed to nominal labels 'B' and 'M' respectively. After this the amount of instances per class were calculate and the corresponding percentage showing the distribution of the two classes. This was visualized into a pie chart using ggplot2. Further visualization was carried out by ggplot as well. After this, NA's were omitted and the data was written to a csv file that was then used in Weka as training and testing data. Models were tested with 10 fold cross validation. The performance of the different algorithms tried were logged. The best model was exported to a .model file and used for the Java application.
+The data was read into R, and turned into a tibble, which allowed for better readability. The provided column names did not clearly explain what any given column was about. With the help of the user manual and the provided .names file these were changed to more comprehensible names. A correlation matrix was made using the cor function after which ggplot2 was used to create a correlation heat map. The class values, which used to be integers, either 2 or 4, were changed to nominal labels 'B' and 'M' respectively. After this the amount of instances per class were calculate and the corresponding percentage showing the distribution of the two classes. This was visualized into a pie chart using ggplot2. Further visualization was carried out by ggplot as well. After this, NA's were omitted and the data was written to a CSV file that was then used in Weka as training and testing data. Models were tested with 10 fold cross validation. The performance of the different algorithms tried were logged. The best model was exported to a .model file and used for the Java application.
 
 \newpage
 # Results
 ## Correlation of the attributes
-An import research question in this analysis was which attributes would best predict breast cancer malignancy. In order to get insight into this, a correlation heat map was made, as to visualize the respective correlations between each of the attributes present in the data set. The resulting plot is shown in figure 1 below:    
+An important research question in this analysis was which attributes would best predict breast cancer malignancy. In order to get insight into this, a correlation heat map was made, as to visualize the respective correlations between each of the attributes present in the data set. The resulting plot is shown in figure 1 below:    
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 library(tibble)
@@ -103,7 +102,7 @@ ggplot(data = melted.cormat, aes(x=Var1, y=Var2, fill=value)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # adjust x labels to be diagonal
         plot.caption = element_text(hjust = 0.7)) # adjust caption position
 ```
-The lightest colors visible in figure 1, besides of course, the diagonal, are those between Cell Shape Uniformity and Cell Size Uniformity. The lightest colors when looking at the class attribute specifically, which is the attribute concerning malignancy, are those between Class & Cell Shape Uniformity, Class & Cell Size Uniformity, and Class and Bare nuclei.  
+The lightest colors visible in figure 1, besides - of course - the diagonal, are those between Cell Shape Uniformity and Cell Size Uniformity. The lightest colors when looking at the class attribute specifically, which is the attribute concerning malignancy, are those between Class & Cell Shape Uniformity, Class & Cell Size Uniformity, and Class and Bare nuclei.  
 
 ## Class Distribution
 To get a sense of how the data set was subdivided in the two class attributes, malignant and benign, a pie chart was made that shows the proportions these values respectively. This chart is shown below in figure 2:
@@ -200,7 +199,7 @@ As can be seen in the table above, this model only produces 6 false negatives fo
 \newpage
 
 # Discussion & Conclusion  
-The goal of this project was to train a machine learning algorithm to classify breast cancer cases as either benign or malignant as accurately as possible and to minimize the amount of data needed for said prediction by searching which attributes in the given data set were suited best for the task. This algorithm had to be very sensitive and yield very little false negative. Completing this goal was achieved by looking at the correlation between the different predictors and the class attribute (figure 1), and by testing various available algorithms with varying cost matrices. The eventual model had an accuracy of 96.77%, as shown in the results, and yielded only 6 false negatives. This model was then implemented in an executable java application.
+The goal of this project was to train a machine learning algorithm to classify breast cancer cases as either benign or malignant as accurately as possible and to minimize the amount of data needed for said prediction by searching which attributes in the given data set were suited best for the task. This algorithm had to be very sensitive and yield very little false negative. Completing this goal was achieved by looking at the correlation between the different predictors and the class attribute (figure 1), and by testing various available algorithms with varying cost matrices. The eventual model had an accuracy of 96.77%, as shown in the results, and yielded only 6 false negatives. This model was then implemented in an executable Java application.
 
 ## Discussion
 Looking back at figure 4, something noteworthy is the very clear divide between the two groups (benign and malignant) when spread over Cell Size- and Cell Shape Uniformity. If given the time, we would have liked to explore how accurate one could classify the data with these attributes only, because the plot gives the impression that a single perceptron could fairly adequately split the data in two. Something to keep in mind however, is that the spread of points in figure 4 noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. This makes sense keeping in mind malignant cancers are cells rapidly and uncontrollably dividing, and would thus create a lot of diversity in cell uniformity, but this unpredictableness can cause inaccuracy when classifying new data sets using Cell Shape Uniformity and Cell Size Uniformity only.
