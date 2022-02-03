@@ -17,22 +17,22 @@ Breast cancer is the second leading cause of cancer death in women. Time is key 
 \tableofcontents
 \newpage
 
-# 1 Introduction
+# Introduction
 Breast cancer is the second leading cause of cancer death in women. It is therefore crucial to determine whether any given found lump in the breasts is a malignant form of breast cancer, or rather benign. Time is key in finding the right diagnosis; A fast diagnosis of breast cancer can drastically improve the five year survival rate, but a rather time consuming part of this is gathering data. Because of this, a machine learning algorithm that can accurately predict breast cancer malignancy with just a few data points could prove vital. Studies show that in stage 1 and stage 2 breast cancer the 5 year survival rate is 89.6-97.9%. But in stage 4 the 5 year survival rate drops to 26.2%. This proves that an early diagnosis is life-crucial. This research hopes to help with creating a machine learning solution to diagnosing breast cancer malignancy. \cite{Cancer1} \cite{Cancer2}
 
-## 1.1 Objective
+## Objective
 The goal of this research can be encompassed in two main research questions:
 Which attributes best predict breast cancer malignancy?
 Is it possible to create a machine learning model that can predict breast cancer malignancy
 with an accuracy of 80% or higher?
 In answering these questions it is important to note that in this case, we would want a very sensitive model, that can pick up as many malignant cases as possible. This model would thus have very little false negatives for malignancy, which might introduce a few extra false positives. This is a fair trade given that the consequences of leaving a malignant lump untreated are far greater than the consequences of treating someone with a benign form.
 
-## 1.2 Theory
+## Theory
 Breast cancer is a type of cancer that starts when cells in the breast begin to grow out of control. These cells usually start a tumor which can be seen on an x-ray or felt as a lump. These lumps are mostly benign, but malignant cases exists which need medical attention. \cite{Cancer2}
 
 \newpage
-# 2 Materials & Methods
-##  2.1 Materials
+# Materials & Methods
+## Materials
 The breast cancer database used in this research was obtained from the University of Wisconsin Hospitals, Madison from Dr. William H. Wolberg. This data is normalized to fit a grading systems that grades the severity of each attribute. A detailed description of what each grade value means for each attribute can be found in the [Breast Cancer Diagnosis Web User Interface](https://www.rai-light.com/docs/BCD_User_Manual_v01.pdf). Furthermore, exploratory data analysis was carried out in R version 4.0.3 using the following packages:  
 
 * ggplot2 2.2.5  
@@ -57,13 +57,13 @@ The code for the Java application is available at the following github repositor
 The exploratory data analysis and the log, can be found in the github repository below:  
 https://github.com/TimSwarts/thema9
 
-## 2.2 Methods
+## Methods
 The data was read into R, and turned into a tibble, which allowed for better readability. The provided column names did not clearly explain what any given column was about. With the help of the user manual and the provided .names file these were changed to more comprehensible names. A correlation matrix was made using the cor function after which ggplot2 was used to create a correlation heat map. The class values, which used to be integers, either 2 or 4, were changed to nominal labels 'B' and 'M' respectively. After this the amount of instances per class were calculate and the corresponding percentage showing the distribution of the two classes. This was visualized into a pie chart using ggplot2. Further visualization was carried out by ggplot as well. After this, NA's were omitted and the data was written to a CSV file that was then used in Weka as training and testing data. Models were tested with 10 fold cross validation. The performance of the different algorithms tried were logged. The best model was exported to a .model file and used for the Java application.
 
 \newpage
-# 3 Results
-## 3.1 Correlation of the attributes
-An important research question in this analysis was which attributes would best predict breast cancer malignancy. In order to get insight into this, a correlation heat map was made, as to visualize the respective correlations between each of the attributes present in the data set. The resulting plot is shown in figure 1 below. In this heat map the strength of the correlation between two attributes in the data set is represented by a colored cell. A lighter color signifies a stronger correlation between the two attributes, and indicates they might be used to predict one another.        
+# Results
+## Correlation of the attributes
+An important research question in this analysis was which attributes would best predict breast cancer malignancy. In order to get insight into this, a correlation heat map was made, as to visualize the respective correlations between each of the attributes present in the data set. The resulting plot is shown in figure 1 below:    
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 library(tibble)
@@ -102,12 +102,10 @@ ggplot(data = melted.cormat, aes(x=Var1, y=Var2, fill=value)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # adjust x labels to be diagonal
         plot.caption = element_text(hjust = 0.7)) # adjust caption position
 ```
-The lightest colors visible in figure 1, besides - of course - the diagonal, are those between Cell Shape Uniformity and Cell Size Uniformity. The lightest colors when looking at the class attribute specifically, which is the attribute concerning malignancy, are those between Class & Cell Shape Uniformity, Class & Cell Size Uniformity, and Class and Bare nuclei. As stated before, a lighter color means a higher correlation, these features were thus chosen to be used when training the machine learning model later on.
+The lightest colors visible in figure 1, besides - of course - the diagonal, are those between Cell Shape Uniformity and Cell Size Uniformity. The lightest colors when looking at the class attribute specifically, which is the attribute concerning malignancy, are those between Class & Cell Shape Uniformity, Class & Cell Size Uniformity, and Class and Bare nuclei.  
 
-Another thing to note is that in this plot, the relation between Class and Bare Nuclei stands out as being of use as well. Although its correlation is weaker than that of the aforementioned attributes, it still looks to lie around 0.8, which was a previously set threshold. Upon further analysis, we have found this value to be roughly 0.76. This was deemed high enough and the Bland Chromatin attribute was added to the list attributes used in training the model.
-
-## 3.2 Class Distribution
-To get a sense of how the data set was subdivided in the two class attributes, malignant and benign, a pie chart was made that shows the proportions these values respectively. It is important to talk about class distribution when assessing machine learning algorithms, because a skew in the data towards a certain class can influence the accuracy of the model. The pie chart that hopes to give insight into this aspect of the data is shown below in figure 2:
+## Class Distribution
+To get a sense of how the data set was subdivided in the two class attributes, malignant and benign, a pie chart was made that shows the proportions these values respectively. This chart is shown below in figure 2:
 
 ```{r}
 # Change class values to B for benign and M for Malignant instead of 2 and 4
@@ -134,8 +132,8 @@ ggplot(count.data, aes(x = "", y = Value, fill = Class)) +
 ```
 Figure 2 shows that roughly two thirds of the data consists of Benign instances. When calculated, we find that only 34.5% of the instances are malignant. This needed to be kept in mind when testing the model, because ZeroR algorithm would in this case already classify 65.5% of the instances correctly by pure chance. Since ZeroR ignores all predictors and simply picks the majority category, a predicting model with an accuracy lower than 65.5% could not be seen as an accurate model.
 
-## 3.3 Relation between Cell Shape Uniformity and Cell Size Uniformity
-After seeing the correlations in figure 1, the decision was made to further investigate the relationship between Cell Shape and Size Uniformity and whether or not they would be able to divide the data into the two class labels. A plot that visualizes this relation is depicted in figure 3, shown below. The points in this plot have been given a jitter, meaning they have a small random offset from their actual position. This was needed to make overlapping points visible.
+## Relation between Cell Shape Uniformity and Cell Size Uniformity
+After seeing the correlations in figure 1, the decision was made to further investigate the relationship between Cell Shape and Size Uniformity and whether or not they would be able to divide the data into the two class labels. A plot that visualizes this relation is depicted in figure 3, shown here:
 
 ```{r, message=FALSE}
 ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Uniformity)) +
@@ -159,7 +157,7 @@ ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Unifo
 ```
 Figure 3 shows the correlation between the attributes Cell_Shape_Uniformity and Cell_Size_Uniformity.
 When looking at the spread of the two colors in this graph, the benign instances seem to form a group in
-the bottom left, while the malignant cases are spread across the middle and the top right. The spread noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. The divide between the two classes show multiple outliers, for instance their is a benign case visible at coordinates (9, 7) in the of a field of malignant cases. This suggest these two attributes alone are not sufficient to create an accurate model. For this reason, the other attributes named in section 3.1 and shown in figure 1, were also used.
+the bottom left, while the malignant cases are spread across the middle and the top right. The spread noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases.
 
 Another visualization was made to further illustrate de relation between Cell Shape Uniformity and breast cancer malignancy. 
 
@@ -175,7 +173,7 @@ ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
 ```
 Figure 4 shows a lot of benign cases at Cell Shape Uniformity grades 1 and 2 and none higher than 8. Malignant cases are spread out, but only 2 points are at grade 1.
 
-## 3.4 Testing Machine Learning Algorithms
+## Testing Machine Learning Algorithms
 Over the span of this research multiple, for the sake of time efficiency, only one is shown here, along with its ROC curve. The model in case is a CostSenstiveClassifier that uses Logistic Regression. This model was trained using only the following attributes as predictors:    
 
 - Cell_Size_Uniformity   
