@@ -45,3 +45,6 @@ docs/
 
 # translation temp files
 po/*~
+
+# specific folders
+Thema9_TimSwarts/
