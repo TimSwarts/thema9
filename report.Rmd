@@ -71,6 +71,7 @@ library(dplyr)
 library(ggplot2)
 library(ggrepel)
 library(reshape2)
+library(ggpubr)
 library(scales)
 ```
 ```{r}
@@ -106,6 +107,8 @@ The lightest colors visible in figure 1, besides - of course - the diagonal, are
 
 Another thing to note is that in this plot, the relation between Class and Bare Nuclei stands out as being of use as well. Although its correlation is weaker than that of the aforementioned attributes, it still looks to lie around 0.8, which was a previously set threshold. Upon further analysis, we have found this value to be roughly 0.76. This was deemed high enough and the Bland Chromatin attribute was added to the list attributes used in training the model.
 
+Lastly, the Cell Shape Uniformity and Cell Size Uniformity attributes appear to have a strong correlation among themselves. This too can be useful in predicting the Class, as we will explore later on with figure 3 in section 3.3.
+
 ## 3.2 Class Distribution
 To get a sense of how the data set was subdivided in the two class attributes, malignant and benign, a pie chart was made that shows the proportions these values respectively. It is important to talk about class distribution when assessing machine learning algorithms, because a skew in the data towards a certain class can influence the accuracy of the model. The pie chart that hopes to give insight into this aspect of the data is shown below in figure 2:
 
@@ -135,7 +138,7 @@ ggplot(count.data, aes(x = "", y = Value, fill = Class)) +
 Figure 2 shows that roughly two thirds of the data consists of Benign instances. When calculated, we find that only 34.5% of the instances are malignant. This needed to be kept in mind when testing the model, because ZeroR algorithm would in this case already classify 65.5% of the instances correctly by pure chance. Since ZeroR ignores all predictors and simply picks the majority category, a predicting model with an accuracy lower than 65.5% could not be seen as an accurate model.
 
 ## 3.3 Relation between Cell Shape Uniformity and Cell Size Uniformity
-After seeing the correlations in figure 1, the decision was made to further investigate the relationship between Cell Shape and Size Uniformity and whether or not they would be able to divide the data into the two class labels. A plot that visualizes this relation is depicted in figure 3, shown below. The points in this plot have been given a jitter, meaning they have a small random offset from their actual position. This was needed to make overlapping points visible.
+After seeing the correlations in figure 1, the decision was made to further investigate the relationship between Cell Shape and Size Uniformity and whether or not they would be able to divide the data into the two class labels. A plot that visualizes this relation is depicted in figure 3, shown below. The points in this plot have been given a *jitter*, meaning they have a small random offset from their actual position. This was necessary to make overlapping points visible.
 
 ```{r, message=FALSE}
 ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Uniformity)) +
@@ -151,6 +154,7 @@ ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Unifo
   scale_y_continuous(breaks = seq(0, 10, by = 2)) +
   xlim(0, 10) +
   scale_x_continuous(breaks = seq(0, 10, by = 2)) +
+  # Add caption
   labs(caption="Figure 3 ~ Cell Shape as a function of Cell Size.
        The color of the points show their class, red being benign, blue being malignant.") +
   # Make theme minimal
@@ -158,17 +162,24 @@ ggplot(data = data, mapping = aes(x = Cell_Size_Uniformity, y = Cell_Shape_Unifo
   theme(plot.caption = element_text(hjust = 0.5))
 ```
 Figure 3 shows the correlation between the attributes Cell_Shape_Uniformity and Cell_Size_Uniformity.
+Most benign cases seem to rest at uniformity grade of 1, whilst malignant cases are more spread out and tend towards a grade of 10. The linear regression line indicates a strong correlation between the two attributes used in this visualization; Cell Size Uniformity and Cell Shape Uniformity. This is consistent with what we saw in figure 1.
+
 When looking at the spread of the two colors in this graph, the benign instances seem to form a group in
 the bottom left, while the malignant cases are spread across the middle and the top right. The spread noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. The divide between the two classes show multiple outliers, for instance their is a benign case visible at coordinates (9, 7) in the of a field of malignant cases. This suggest these two attributes alone are not sufficient to create an accurate model. For this reason, the other attributes named in section 3.1 and shown in figure 1, were also used.
 
 Another visualization was made to further illustrate de relation between Cell Shape Uniformity and breast cancer malignancy. 
 
 ```{r, message=FALSE}
+# Plot cell shape as function off class
 ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
+  # Add jitter to the points so overlaps are still vissible
   geom_jitter(width = 0.05, height = 0.2, col = "forestgreen", alpha = 0.5) +
+  # Scale y limits to the 0-10 grading system
   ylim(0, 10) +
+  # Set axis labels
   xlab("Class (B or M)") +
   ylab("Cell Shape Uniformity (grade 1-10)") +
+  # Add caption
   scale_y_continuous(breaks = seq(0, 10, by = 2)) +
   labs(caption="Figure 4 ~ Cell Shape as a function of Class. Jitter and transparancy is added to show the denisity of points at each grade.") +
   theme_minimal()
@@ -176,7 +187,7 @@ ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
 Figure 4 shows a lot of benign cases at Cell Shape Uniformity grades 1 and 2 and none higher than 8. Malignant cases are spread out, but only 2 points are at grade 1.
 
 ## 3.4 Testing Machine Learning Algorithms
-Over the span of this research multiple, for the sake of time efficiency, only one is shown here, along with its ROC curve. The model in case is a CostSenstiveClassifier that uses Logistic Regression. This model was trained using only the following attributes as predictors:    
+Over the span of this research multiple algorithms have been tested to see how they perform on our data set. For the sake of time efficiency, only one is shown here, along with its ROC curve. The model in case is a CostSenstiveClassifier that uses Logistic Regression. This model was trained using only the following attributes as predictors:    
 
 - Cell_Size_Uniformity   
 - Cell_Shape_Uniformity   
@@ -196,7 +207,56 @@ Precision for M: 0.936
 
 Table: Confusion Matrix Logistic Cost Sensitive Classifier
 
-As can be seen in the table above, this model only produces 6 false negatives for malignant breast cancer. This is visible in the cell in the column classified as B (Benign) and the row M (actually malignant).
+As can be seen in the table above, this model only produces 6 false negatives for malignant breast cancer. This is visible in the cell in the column classified as B (Benign) and the row M (actually malignant). It also yields 16 false positives (classified as malignant, actually benign), this suggest the model is slightly more sensitive than it is specific. This is expected, because we wanted to minimize false negatives as much as possible in our research. Figure 5, shown below, further illustrates this.
+
+```{r}
+# Collect data from ROC arfff file
+roc_data <- read.table("ROC.arff", 
+                   sep = ",", 
+                   comment.char = "@")
+# Set correct column names
+names(roc_data) <- c("Instance_number", 
+                 "True_Positives",
+                 "False_Negatives",
+                 "False_Positives",
+                 "True_Negatives",
+                 "False_Positive_Rate",
+                 "True_Positive_Rate",
+                 "Precision",
+                 "Recall",
+                 "Fallout",
+                 "FMeasure",
+                 "Sample_Size",
+                 "Lift",
+                 "Threshold")
+
+# Define color pattern
+colors <- c(classifier = "steelblue1", threshold = "salmon2")
+# Plot ROC curve
+plt <- ggplot(data = roc_data,
+       mapping = aes(x = False_Positive_Rate, y = True_Positive_Rate)) +
+    # Add classifier points
+    geom_point(mapping = aes(color = "classifier")) +
+    # Add threshold line, 45 degree diagonal
+    geom_abline(aes(color = "threshold", 
+                    slope = 1, 
+                    intercept = 0)) + 
+    # Set colors to color pattern
+    scale_color_manual(values = colors) +
+    # Set axis labels
+    xlab("False Positive Rate") +
+    ylab("True Positive Rate") +
+    # Caption
+    scale_y_continuous(breaks = seq(0, 10, by = 2)) +
+    labs(caption="Figure 5 ~ ROC−Curve of model using a cost−sensitive logistic classifier.") +
+    # Add themes
+    #theme_minimal() +
+    theme_pubr() +
+    theme(legend.title = element_blank()) +
+    theme_minimal()
+print(plt)
+```
+The ROC curve in figure 5 shows almost an 90 degree angle in the upper left corner. The AUC of this plot lies at 0.993. The closer this value is to 1, the better the model is at distinguishing between malignant and benign cases. An AUC of 0.993 thus indicates our model is quite capable of making this distinction.
 
 \newpage
 
@@ -204,6 +264,8 @@ As can be seen in the table above, this model only produces 6 false negatives fo
 The goal of this project was to train a machine learning algorithm to classify breast cancer cases as either benign or malignant as accurately as possible and to minimize the amount of data needed for said prediction by searching which attributes in the given data set were suited best for the task. This algorithm had to be very sensitive and yield very little false negative. Completing this goal was achieved by looking at the correlation between the different predictors and the class attribute (figure 1), and by testing various available algorithms with varying cost matrices. The eventual model had an accuracy of 96.77%, as shown in the results, and yielded only 6 false negatives. This model was then implemented in an executable Java application.
 
 ## Discussion
+When we take in account the correlations found in figure 1, along with further data analysis (not shown in this paper, but visible (here)[https://github.com/TimSwarts/thema9/blob/master/log.pdf]) it becomes apparent that features related to irregularities in cell growth are correlated most strongly to malignancy. This isn't surprising, seen as abnormal growth is a key characteristic of cancer.
+
 Looking back at figure 4, something noteworthy is the very clear divide between the two groups (benign and malignant) when spread over Cell Size- and Cell Shape Uniformity. If given the time, we would have liked to explore how accurate one could classify the data with these attributes only, because the plot gives the impression that a single perceptron could fairly adequately split the data in two. Something to keep in mind however, is that the spread of points in figure 4 noticeably widens near the top right of the plot, showing a bigger spread in values in malignant cases than in benign cases. This makes sense keeping in mind malignant cancers are cells rapidly and uncontrollably dividing, and would thus create a lot of diversity in cell uniformity, but this unpredictableness can cause inaccuracy when classifying new data sets using Cell Shape Uniformity and Cell Size Uniformity only.
 
 ## Conclusion
