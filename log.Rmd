@@ -182,13 +182,7 @@ ggplot(data = data, mapping = aes(x = Class, y = Cell_Shape_Uniformity)) +
   theme_minimal()
 ```
 Looking at figure 4, we can conclude that most of benign cases will get a cell shape grade of 2 or lower. The malignant cases, however, appear more spread out. This would cause inaccuracy when classifying with this attribute only.      
-<!--
-### raw data, not well documented
-```{r}
-wdbc <- read.csv("wdbc.data", header=F)
-head(wdbc)
-```
--->
+
 
 # Set data to csv
 ```{r, name="make data set"}
