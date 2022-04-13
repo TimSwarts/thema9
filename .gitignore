@@ -48,3 +48,6 @@ po/*~
 
 # specific folders
 Thema9_TimSwarts/
+*.zip
+EDA_files/
+log_files/
